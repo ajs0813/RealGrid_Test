@@ -13,13 +13,17 @@ export default {
     },
 
     postArticle: function(userId, title, body){
-        return axios.post(
-            BASE_URL + "posts",
-            {
+        return axios.post(BASE_URL + "posts",{
                 userId: userId,
                 title: title,
                 body: body,
-            }
-        );
+            });
+    },
+
+    patchArticle: function(id, title, body){
+        return axios.patch(BASE_URL + `posts/${id}`,{
+                title: title,
+                body: body,
+            });
+        },
     }
-}

@@ -17,7 +17,7 @@ const routes = [
   },
 
   {
-    path:"/board/write",
+    path:"/board/write/:id?",
     name:"Write",
     component: WriteView,
   }
