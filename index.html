@@ -8,30 +8,70 @@
 <script type="text/javascript" src="/js/jquery-3.4.0.min.js"></script>
 </head>
 <body>
-	<div id="realgrid" style="width: 100%; height: 400px;"></div>
+	<div id="master_grid" style="width: 100%; height: 400px;"></div>
+	<div id="detail_grid" style="width: 100%; height: 400px;"></div>
 	
 </body>
 </html>
 
 <script>
 	document.addEventListener('DOMContentLoaded', function(){
+		const provider_master = new RealGrid.LocalDataProvider();
+		const gridView_master = new RealGrid.GridView("master_grid");
+		gridView.setDataSource(provider_master);
+
 		const provider = new RealGrid.LocalDataProvider();
-		const gridView = new RealGrid.GridView("realgrid");
-		gridView.setDataSource(provider);
+		const gridView_detail = new RealGrid.GridView("detail_grid");
+		girdView_detail.setDataSource(provider_detail);
 
-		provider.setFields([
-			{fieldName: "id"},
-			{fieldName: "title"},
+		provider_master.setFields([
+			{fieldName: "OrderID"},
+			{fieldName: "CustomerID"},
+			{fieldName: "CompanyName"},
 		]);
 
-		gridView.setColumns([
-			{name: "id", fieldName: "id"},
-			{name: "title", fieldName: "title"},
+		gridView_master.setColumns([
+			{name: "OrderID", fieldName:"OrderID"},
+			{name:"CustomerID", fieldName:"CustomerID"},
+			{name:"CompanyName", fieldName: "CompanyName"},
 		]);
 
-		$.getJSON("https://jsonplaceholder.typicode.com/posts", function(data){
-			console.log(data);
-			provider.fillJsonData(data, {fillMode:"set"});
+		provider_detail.setFields([
+			{fieldName: "OrderID"},
+			{fieldName: "ProductName"},
+			{fieldName: "UnitPrice"},
+		]);
+
+		gridView_detail.setColumns([
+			{name: "OrderID", fieldName:"OrderID"},
+			{name:"ProductName", fieldName:"ProductName"},
+			{name:"UnitPrice", fieldName: "UnitPrice"},
+		]);
+
+		var master_data = [
+			{OrderID: 10248, CustomerID: "VINET", CompanyName:"Vins et alcools Chevaliter"},
+			{OrderID: 10249, CustomerID: "TOMSP", CompanyName: "Toms Spezialitaten"},
+		];
+
+		var detail_data = [
+			{OrderID:10248, ProductName: "Queso Cabrales", UnitPrice: 14, Quantity: 12},
+			{OrderID:10248, ProductName: "Queso Cabrales", UnitPrice: 14, Quantity: 12},
+			{OrderID:10248, ProductName: "Queso Cabrales", UnitPrice: 14, Quantity: 12},
+			{OrderID:10249, ProductName: "Queso Cabrales", UnitPrice: 14, Quantity: 12},
+			{OrderID:10249, ProductName: "Queso Cabrales", UnitPrice: 14, Quantity: 12},
+		];
+
+		provider_master.fillJsonData(master_data,{fillMode:"set"});
+
+		gridView_master.onCurrentRowChanged = function(grid, oldRow, newRow){
+			provider_detail.clearRows();
+			if(newRow < 0) return;
+
+			var key = parseInt(provider_master.getValue(newRow,"OrderID"));
+			var datas = detail_data.filter(function(e){
+				return e.OrderID === key;
+			});
+			provider_detail.setRows(datas);
+		};
 	});
-});
 </script>
